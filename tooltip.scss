@@ -1,0 +1,91 @@
+/**
+ * Tooltip.js is a lightweight javascript plugin for responsive and
+ * easy to use tooltips.
+ *
+ * @version   1.0
+ * @author    Jakob Ploens <jakob@2helden.com>
+ * @copyright Jakob Ploens 2016
+ * @license   The MIT License
+ */
+
+/**
+ * Settings
+ *
+ */
+$tooltip-background-color: #000;
+$tooltip-font-color:       #fff;
+
+$tooltip-z-index:          10000;
+$tooltip-max-width:        30em;
+$tooltip-padding:          .5em 1em;
+$tooltip-border-radius:    2px;
+
+$tooltip-caret-size:       .5em;
+$tooltip-caret-offset:     2.5;
+
+
+/**
+ * Don't change following lines till line 42.
+ * These are the most important ones.
+ *
+ */
+.tooltip {
+    opacity:  0;
+    position: absolute;
+    z-index:  $tooltip-z-index;
+}
+.tooltip--fixed {
+    position: fixed;
+}
+.tooltip--is-shown {
+    opacity:  1;
+}
+
+/**
+ * Here you go – our theme. Adjust like you want it to look like.
+ */
+.tooltip {
+    background:    $tooltip-background-color;
+    color:         $tooltip-font-color;
+    text-align:    center;
+
+    max-width:     $tooltip-max-width;
+    padding:       $tooltip-padding;
+    border-radius: $tooltip-border-radius;
+
+    -webkit-transition: opacity .1s;
+            transition: opacity .1s;
+}
+
+/**
+ * Defining the caret.
+ */
+.tooltip::after {
+    content:       '';
+    position:      absolute;
+    left:          50%;
+    width:         0;
+    height:        0;
+
+    border-left:   $tooltip-caret-size solid transparent;
+    border-right:  $tooltip-caret-size solid transparent;
+    border-top:    $tooltip-caret-size solid $tooltip-background-color;
+
+    margin-left:   -1 * $tooltip-caret-size;
+    bottom:        -1 * $tooltip-caret-size;
+}
+.tooltip--top::after {
+    border-top:    none;
+    border-bottom: $tooltip-caret-size solid $tooltip-background-color;
+    top:           -1 * $tooltip-caret-size;
+    bottom:        auto;
+}
+.tooltip--left::after {
+    left:          $tooltip-caret-size * $tooltip-caret-offset;
+    margin:        0;
+}
+.tooltip--right::after {
+    right:         $tooltip-caret-size * $tooltip-caret-offset;
+    margin:        0;
+    left:          auto;
+}
