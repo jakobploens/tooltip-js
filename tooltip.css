@@ -1,0 +1,79 @@
+/**
+ * Tooltip.js is a lightweight javascript plugin for responsive and
+ * easy to use tooltips.
+ *
+ * @version   1.0
+ * @author    Jakob Ploens <jakob@2helden.com>
+ * @copyright Jakob Ploens 2016
+ * @license   The MIT License
+ */
+/**
+ * Settings
+ *
+ */
+/**
+ * Don't change following lines till line 42.
+ * These are the most important ones.
+ *
+ */
+.tooltip {
+  opacity: 0;
+  position: absolute;
+  z-index: 10000;
+}
+
+.tooltip--fixed {
+  position: fixed;
+}
+
+.tooltip--is-shown {
+  opacity: 1;
+}
+
+/**
+ * Here you go – our theme. Adjust like you want it to look like.
+ */
+.tooltip {
+  background: #000;
+  color: #fff;
+  text-align: center;
+  max-width: 30em;
+  padding: 0.5em 1em;
+  border-radius: 2px;
+  -webkit-transition: opacity .1s;
+  transition: opacity .1s;
+}
+
+/**
+ * Defining the caret.
+ */
+.tooltip::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-left: 0.5em solid transparent;
+  border-right: 0.5em solid transparent;
+  border-top: 0.5em solid #000;
+  margin-left: -0.5em;
+  bottom: -0.5em;
+}
+
+.tooltip--top::after {
+  border-top: none;
+  border-bottom: 0.5em solid #000;
+  top: -0.5em;
+  bottom: auto;
+}
+
+.tooltip--left::after {
+  left: 1.25em;
+  margin: 0;
+}
+
+.tooltip--right::after {
+  right: 1.25em;
+  margin: 0;
+  left: auto;
+}

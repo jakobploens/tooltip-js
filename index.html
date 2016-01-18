@@ -1,0 +1,30 @@
+<html>
+<head>
+    <title>TooltipJS Demo</title>
+
+    <link href="demo.css" rel="stylesheet">
+    <link href="tooltip.css" rel="stylesheet">
+</head>
+<body>
+
+    <h1>TooltipJS Demo</h1>
+
+    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in <span class="trigger" data-tooltip="This is a tooltip">reprehenderit</span> in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+
+    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do <span class="trigger" data-tooltip="This is a tooltip with a multiline target">eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure</span> dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+
+    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute <span class="trigger" data-tooltip="This is <i>a <b>html</b> content</i> tooltip">irure dolor</span> in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+
+    <script src="http://code.jquery.com/jquery-2.2.0.min.js"></script>
+    <script src="tooltip.js"></script>
+    <script>
+    $(document).ready(function(){
+        $('.trigger').tooltip({
+            follow: true,
+            offset: 10,
+            html: true
+        });
+    })
+    </script>
+</body>
+</html>
