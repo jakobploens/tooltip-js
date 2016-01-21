@@ -17,12 +17,22 @@ var Tooltip = function(element, settings){
      *
      * @param integer Animation's speed – if needed.
      * @param integer Delay between mouse leaving target and removing tooltip
-     * @param integer Difference between tooltip and target
-     * @param string  Tooltip's position. Can be either auto or left/right/top/bottom
+     * @param integer Difference between tooltip and cursor
+     *
      * @param string  CSS class for tooltip
      * @param string  CSS class for fixed tooltip
+     * @param string  CSS class for left aligned tooltip
+     * @param string  CSS class for right aligned tooltip
+     * @param string  CSS class for top aligned tooltip
+     * @param string  CSS class for bottom aligned tooltip
+     * @param string  CSS class for shown tooltip
+     *
+     * @param string  Tooltip's position. Can be either auto or left/right/top/bottom
      * @param string  Data attribute for the content
-     * @param string  Event to trigger the tooltip
+     * @param string  Event to trigger the tooltip. If false, tooltip has to be triggered manually by calling tooltip.construct();
+     * @param string  Event to trigger the remove of the tooltip.
+     *
+     * @param boolean If true, adds fixed class, no matter what inFixedPosition() returns
      * @param boolean If true, follows mouse instead of one defined position
      * @param boolean If true, injects html insted of plain text
      */
@@ -42,7 +52,9 @@ var Tooltip = function(element, settings){
         position:    'auto',
         dataAttr:    'tooltip',
         trigger:     'mouseenter',
+        triggerOff:  'mouseleave',
 
+        fixed:       false,
         follow:      false,
         html:        false,
     };
@@ -52,37 +64,37 @@ var Tooltip = function(element, settings){
      */
     this.options = merge(this.defaults, settings);
 
+    this.bound = false;
+
 
     /**
-     * Save target as jQuery object
+     * Save target as object
      */
-    this.$target  = $(element);
-    this.$tooltip = $('<div class="' + this.options.class + '" role="tooltip" aria-hidden="true" />');
-    this.content  = this.$target.data( this.options.dataAttr );
 
-    this.target   = element;
-    this.tooltip = '<div class="' + this.options.class + '" role="tooltip" aria-hidden="true" />';
+    this.target  = element;
+    this.content = this.target.getAttribute('data-' + this.options.dataAttr);
+
+    /**
+     * Add tooltip and attributes
+     */
+    this.tooltip = document.createElement('div');
+    this.tooltip.addClass(this.options.class);
+    this.tooltip.setAttribute('role', 'tooltip');
 
 
 
     /**
      * Init function which builds our tooltip
      *
-     * @param  string Element selector of tooltip
-     * @param  object Custom options, see defaults for more information
      * @return prototype
      */
-    this.init = function(element, settings){
-
-        /**
-         * Remove existing tooltips, just to be sure
-         */
-        self.remove();
-
+    this.init = function(){
         /**
          * Bind events to tooltip's event trigger
          */
-        self.target.addEventListener(self.options.trigger, self.construct);
+        if(self.options.trigger){
+            self.target.addEventListener(self.options.trigger, self.construct);
+        }
 
         /**
          * Return this
@@ -107,20 +119,17 @@ var Tooltip = function(element, settings){
          * Add content and append object to body
          */
         if(self.options.html){
-            self.$tooltip.html(self.content);
-            // self.tooltip.innerHTML = self.content;
+            self.tooltip.innerHTML = self.content;
         } else {
-            self.$tooltip.text(self.content);
-            // self.tooltip.textContent = self.content;
+            self.tooltip.textContent = self.content;
         }
-        // document.querySelector('body').innerHTML += self.tooltip;
-        $('body').append(self.$tooltip);
+        document.body.appendChild(self.tooltip);
 
         /**
          * If target is in a fixed container, apply fixed class to tooltip.
          */
         if(self.inFixedPosition(self.$target)){
-            self.$tooltip.addClass(self.options.classFixed);
+            self.tooltip.addClass(self.options.classFixed);
         }
 
         /**
@@ -128,9 +137,17 @@ var Tooltip = function(element, settings){
          */
         self.position();
 
-        self.target.addEventListener('mouseleave', function(){
-            setTimeout(self.remove, self.options.delay);
-        });
+        /**
+         * If trigger off was not bound yet, bind it and set bound to true.
+         */
+        if(!self.bound){
+            self.target.addEventListener(self.options.triggerOff, function(){
+                setTimeout(self.remove, self.options.delay);
+            });
+            self.bound = true;
+        }
+
+        return self;
     };
 
 
@@ -153,12 +170,17 @@ var Tooltip = function(element, settings){
          */
         var windowWidth    = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
 
-        var targetWidth    = self.$target.outerWidth();
-        var targetHeight   = self.$target.outerHeight();
-        var targetPosition = self.$target.offset();
+        var targetWidth    = self.target.offsetWidth;
+        var targetHeight   = self.target.offsetHeight;
 
-        var tooltipWidth   = self.$tooltip.outerWidth();
-        var tooltipHeight  = self.$tooltip.outerHeight();
+        var rect = self.target.getBoundingClientRect();
+        var targetPosition = {
+            top: rect.top + document.body.scrollTop,
+            left: rect.left + document.body.scrollLeft
+        };
+
+        var tooltipWidth   = self.tooltip.offsetWidth;
+        var tooltipHeight  = self.tooltip.offsetHeight;
 
         var left = targetPosition.left + (targetWidth / 2) - (tooltipWidth / 2);
         var top  = targetPosition.top - tooltipHeight - offset;
@@ -167,7 +189,7 @@ var Tooltip = function(element, settings){
          * If window is smaller than tooltip, add a new max width to tooltip
          */
         if(windowWidth < (tooltipWidth * 1.5)){
-            self.$tooltip.css('max-width', (windowWidth / 2));
+            self.tooltip.style.maxWidth = (windowWidth / 2);
         }
 
         /**
@@ -175,49 +197,47 @@ var Tooltip = function(element, settings){
          */
         if(position === 'left' || left < 0){
             left = targetPosition.left + (targetWidth / 2) - offset;
-            self.$tooltip.addClass(self.options.classLeft);
+            self.tooltip.addClass(self.options.classLeft);
         } else {
-            self.$tooltip.removeClass(self.options.classLeft);
+            self.tooltip.removeClass(self.options.classLeft);
         }
 
         if(position === 'right' || (left + tooltipWidth) > windowWidth){
             left = targetPosition.left - tooltipWidth + (targetWidth / 2) + offset;
-            self.$tooltip.addClass(self.options.classRight);
+            self.tooltip.addClass(self.options.classRight);
         } else {
-            self.$tooltip.removeClass(self.options.classRight);
+            self.tooltip.removeClass(self.options.classRight);
         }
 
         if(position === 'bottom' || top < 0){
             direction = 'up';
             top = targetPosition.top + targetHeight + offset;
-            self.$tooltip.addClass(self.options.classBottom);
+            self.tooltip.addClass(self.options.classBottom);
         } else {
-            self.$tooltip.removeClass(self.options.classBottom);
+            self.tooltip.removeClass(self.options.classBottom);
         }
 
         if(position === 'top'){
             top = targetPosition.top - tooltipHeight - offset;
-            self.$tooltip.removeClass(self.options.classBottom);
+            self.tooltip.removeClass(self.options.classBottom);
         }
 
         /**
          * If follow is true, recalculate the left and top values again.
          */
         if(self.options.follow){
-            self.$target.on('mousemove', function(event){
+            self.target.addEventListener('mousemove', function(event){
                 left = event.pageX - (tooltipWidth / 2);
                 top  = event.pageY - tooltipHeight - offset;
 
-                self.$tooltip.css({
-                    left: left,
-                    top:  top
-                }).addClass(self.options.classShown);
+                self.tooltip.style.top  = top;
+                self.tooltip.style.left = left;
+                self.tooltip.addClass(self.options.classShown);
             });
         } else {
-            self.$tooltip.css({
-                left: left,
-                top:  top
-            }).addClass(self.options.classShown);
+            self.tooltip.style.top  = top;
+            self.tooltip.style.left = left;
+            self.tooltip.addClass(self.options.classShown);
         }
     };
 
@@ -225,10 +245,12 @@ var Tooltip = function(element, settings){
     /**
      * Returns true if one of parents is in fixed position
      *
-     * @param  jQuery Object
+     * @param  object
      * @return boolean
      */
-    this.inFixedPosition = function($element){
+    this.inFixedPosition = function(element){
+        if(self.options.fixed) return true;
+
         return false;
     };
 
@@ -236,22 +258,22 @@ var Tooltip = function(element, settings){
     /**
      * Remove a named tooltip or all.
      *
-     * @param  jQuery object
+     * @param  boolean
      * @return boolean
      */
     this.remove = function(){
         var all = false;
 
         if(all){
-            $(self.options.class).removeClass(self.options.classShown);
+            document.querySelector(self.options.class).removeClass(self.options.classShown);
             setTimeout(function(){
-                $(self.options.class).remove();
+                document.querySelector(self.options.class).parentNode.removeChild(document.querySelector(self.options.class));
             }, self.speed);
 
         } else {
-            self.$tooltip.removeClass(self.options.classShown);
+            self.tooltip.removeClass(self.options.classShown);
             setTimeout(function(){
-                self.$tooltip.remove();
+                self.tooltip.parentNode.removeChild(self.tooltip);
             }, self.speed);
         }
 
@@ -277,6 +299,23 @@ var Tooltip = function(element, settings){
 
 
 /**
+ * Class to trigger more than one tooltip without using a loop manually.
+ */
+var Tooltips = function(selector, options){
+    var self      = this;
+    this.elements = document.querySelectorAll(selector);
+    this.tooltips = [];
+    this.options  = options;
+
+    Array.prototype.forEach.call(self.elements, function(item, i){
+        self.tooltips.push(new Tooltip(item, self.options));
+    });
+
+    return this;
+};
+
+
+/**
  * Short function to merge two objects.
  *
  * @param  object (gets overwritten)
@@ -294,18 +333,53 @@ function merge(objectA, objectB){
     return result;
 }
 
+/**
+ * addClass
+ *
+ * @param  string class name
+ * @return object
+ * @since  1.0
+ */
+Object.prototype.addClass = function(className){
+    if(this.classList){
+        this.classList.add(className);
+    } else {
+        this.className += ' ' + className;
+    }
+    return this;
+};
+
+/**
+ * removeClass
+ *
+ * @param  string class name
+ * @return object
+ * @since  1.0
+ */
+Object.prototype.removeClass = function(className){
+    if (this.classList){
+        this.classList.remove(className);
+    } else {
+        this.className = this.className.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
+    }
+};
 
 
-(function($){
-    'use strict';
+/**
+ * jQuery Plugin
+ */
+if(window.jQuery){
+    (function($){
+        'use strict';
 
-    /**
-     * Initialize jQuery plugin
-     */
-    $.fn.tooltip = function(options){
-        $(this).each(function(){
-            var tooltip = new Tooltip(this, options);
-        });
-        return;
-    };
-})(jQuery);
+        /**
+         * Initialize jQuery plugin
+         */
+        $.fn.tooltip = function(options){
+            $(this).each(function(){
+                var tooltip = new Tooltip(this, options);
+            });
+            return;
+        };
+    })(jQuery);
+}
