@@ -74,11 +74,14 @@ $tooltip-caret-offset:     2.5;
     margin-left:   -1 * $tooltip-caret-size;
     bottom:        -1 * $tooltip-caret-size;
 }
-.tooltip--top::after {
+.tooltip--bottom::after {
     border-top:    none;
     border-bottom: $tooltip-caret-size solid $tooltip-background-color;
     top:           -1 * $tooltip-caret-size;
     bottom:        auto;
+}
+.tooltip--left {
+    margin-left: $tooltip-caret-size * $tooltip-caret-offset * -1;
 }
 .tooltip--left::after {
     left:          $tooltip-caret-size * $tooltip-caret-offset;

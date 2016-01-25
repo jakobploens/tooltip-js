@@ -60,11 +60,15 @@
   bottom: -0.5em;
 }
 
-.tooltip--top::after {
+.tooltip--bottom::after {
   border-top: none;
   border-bottom: 0.5em solid #000;
   top: -0.5em;
   bottom: auto;
+}
+
+.tooltip--left {
+  margin-left: -1.25em;
 }
 
 .tooltip--left::after {
