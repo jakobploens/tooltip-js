@@ -249,13 +249,13 @@ var Tooltip = function(element, settings){
                 left = event.pageX - (tooltipWidth / 2);
                 top  = event.pageY - tooltipHeight - offset;
 
-                self.tooltip.style.top  = top;
-                self.tooltip.style.left = left;
+                self.tooltip.style.top  = parseInt(top) + 'px';
+                self.tooltip.style.left = parseInt(left) + 'px';
                 self.tooltip.addClass(self.options.classShown);
             });
         } else {
-            self.tooltip.style.top  = top;
-            self.tooltip.style.left = left;
+            self.tooltip.style.top  = parseInt(top) + 'px';
+            self.tooltip.style.left = parseInt(left) + 'px';
             self.tooltip.addClass(self.options.classShown);
         }
     };
