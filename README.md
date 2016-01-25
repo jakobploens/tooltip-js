@@ -2,6 +2,10 @@
 
 Lightweight javascript plugin for HTML5 tooltips with CSS animations. No dependencies needed, just plain Javascript.
 
+### Moral License / Support me
+
+You can buy a moral license and support me with buying me a cup of coffee via [PayPal](https://www.paypal.me/jakobploens/3,50).
+
 ### Installation
 
 1. Include tooltip.js and tooltip.css.
