@@ -146,7 +146,7 @@ var Tooltip = function(element, settings){
 
         /**
          * If target is in a fixed container, apply fixed class to tooltip.
-         */
+         */ 
         if(self.inFixedPosition(self.$target)){
             self.tooltip.addClass(self.options.classFixed);
         }
