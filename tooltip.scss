@@ -12,16 +12,19 @@
  * Settings
  *
  */
-$tooltip-background-color: #000;
-$tooltip-font-color:       #fff;
+$tooltip-background-color:    #000;
+$tooltip-font-color:          #fff;
 
-$tooltip-z-index:          10000;
-$tooltip-max-width:        30em;
-$tooltip-padding:          .5em 1em;
-$tooltip-border-radius:    2px;
+$tooltip-z-index:             10000;
+$tooltip-max-width:           30em;
+$tooltip-padding:             .5em 1em;
+$tooltip-border-radius:       2px;
+$tooltip-transform-offset:    .5em;
 
-$tooltip-caret-size:       .5em;
-$tooltip-caret-offset:     2.5;
+$tooltip-caret-size:          .5em;
+$tooltip-caret-offset:        2.5;
+
+$tooltip-transition-duration: 200ms;
 
 
 /**
@@ -30,15 +33,17 @@ $tooltip-caret-offset:     2.5;
  *
  */
 .tooltip {
-    opacity:  0;
-    position: absolute;
-    z-index:  $tooltip-z-index;
+    opacity:   0;
+    position:  absolute;
+    z-index:   $tooltip-z-index;
+    transform: translate(0, #{$tooltip-transform-offset * -1});
 }
 .tooltip--fixed {
     position: fixed;
 }
 .tooltip--is-shown {
     opacity:  1;
+    transform: translate(0, 0);
 }
 
 /**
@@ -53,8 +58,8 @@ $tooltip-caret-offset:     2.5;
     padding:       $tooltip-padding;
     border-radius: $tooltip-border-radius;
 
-    -webkit-transition: opacity .1s;
-            transition: opacity .1s;
+    transition: opacity $tooltip-transition-duration ease-in-out,
+                transform $tooltip-transition-duration ease-in-out;
 }
 
 /**
@@ -73,6 +78,9 @@ $tooltip-caret-offset:     2.5;
 
     margin-left:   -1 * $tooltip-caret-size;
     bottom:        -1 * $tooltip-caret-size;
+}
+.tooltip--bottom {
+    transform: translate(0, #{$tooltip-transform-offset});
 }
 .tooltip--bottom::after {
     border-top:    none;
