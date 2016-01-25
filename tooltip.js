@@ -61,16 +61,20 @@ var Tooltip = function(element, settings){
 
     /**
      * Get options.
+     * Settings is the combination of defaults and custom JS options,
+     * Options has additionally the data-attributes included
      */
-    this.options = merge(this.defaults, settings);
+    this.settings = merge(this.defaults, settings);
+    this.options  = this.settings;
 
+    /**
+     * Setup local store variables
+     */
     this.bound = false;
-
 
     /**
      * Save target as object
      */
-
     this.target  = element;
     this.content = this.target.getAttribute('data-' + this.options.dataAttr);
 
@@ -80,6 +84,21 @@ var Tooltip = function(element, settings){
     this.tooltip = document.createElement('div');
     this.tooltip.addClass(this.options.class);
     this.tooltip.setAttribute('role', 'tooltip');
+
+    /**
+     * Look for data-attributes at target and append if neccessary.
+     */
+    for(var key in this.defaults){
+        var data = this.target.getAttribute('data-' + key);
+        if(data && data != ""){
+            if(data === "false"){
+                data = false;
+            } else if(data === "true"){
+                data = true;
+            }
+            this.options[key] = data;
+        }
+    }
 
 
 
